@@ -1,0 +1,325 @@
+<!-- Copyright (c) 2024 Curo Lab -->
+<!--All rights reserved. -->
+<!-- This code is provided as is with no implied warranties. -->
+<!--  Redistribution is allowed for non-commercial use, subject to proper attribution.-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Curo AI</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="manifest" href="manifest.json">
+        <meta name="theme-color" content="#000000">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"></script>
+        
+        
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <style>
+            .history-loading-indicator {
+                display: none;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                color: #aaa;
+            }
+
+            .history-loading-spinner {
+                border: 4px solid rgba(0, 0, 0, 0.1);
+                border-top-color: #777;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        </style>
+    </head>
+    <body class="dark-mode">
+        <div class="top-toolbar" id="top-toolbar">
+            
+            <button id="historyMenuButton" class="history-menu-button" title="Chat History">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo-container" id="logo-container">
+                <img src="images/lighr.png" alt="CrypyAI Logo" class="logo light-mode-logo">
+                <img src="images/darkk.png" alt="CrypyAI Logo" class="logo dark-mode-logo">
+            </div>
+            <button id="settingsButton" class="settings-button" title="Settings">⚙</button>
+        </div>
+        
+        <!-- MOVED SETTINGS POPUP HERE -->
+        <div class="settings-container">
+            <div id="settingsPopup" class="settings-popup">
+                <div class="setting-item">
+                    <label for="apiKeyInput" class="api-key-label">API Key: <span class="tooltip-icon">ⓘ</span>
+                        <span class="tooltip-text">Enter your Google Gemini API key. Your key is saved securely in your browser's local storage and is never sent to our servers.</span>
+                    </label>
+                    <div class="api-key-wrapper">
+                        <input type="password" id="apiKeyInput" placeholder="Enter your Gemini API Key">
+                        <button id="saveApiKeyButton">Save</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label for="temperatureSlider">Randomness  <span class="tooltip-icon">ⓘ</span>
+                        <span class="tooltip-text">Controls the randomness of the output. Lower values are more predictable, higher values are more random.</span>
+                    </label>
+                    <input type="range" id="temperatureSlider" min="0" max="2" step="0.1" value="">
+                    <span id="temperatureValue"></span>
+                </div>
+                <div class="setting-item">
+                    <label for="topPSlider">Diversity‏‏‏ ‏ ‏ ‏ ‏  ‏ ‏ ‎ ‎ <span class="tooltip-icon">ⓘ</span>
+                        <span class="tooltip-text">Controls the diversity of the output. Lower values are more focused, higher values are more diverse.</span>
+                    </label>
+                    <input type="range" id="topPSlider" min="0" max="1" step="0.1" value="">
+                    <span id="topPValue"></span>
+                </div>
+                
+
+                <div class="setting-item">
+                    <label>Select AI Model: <span class="tooltip-icon" id="model-info-icon">ⓘ</span>
+                        <span class="tooltip-text">
+                            <p><b>Curo Flash:</b> Optimized for rapid text generation.</p>
+                            <p><b>Curo Thinking:</b> Built for deep dives.</p>
+                            <p><b>Curo Custom:</b> Use a custom instruction.</p>
+                            <p><b>Curo Image:</b> Generate images natively.</p>
+                        </span>
+                    </label>
+                    <div class="model-buttons">
+                        <button id="geminiFlashButton" class="model-button active">Curo Flash</button>
+                        <button id="gemini1206Button" class="model-button">Curo Thinking</button>
+                        <button id="geminiCustomButton" class="model-button">Curo Custom</button>
+                        <button id="geminiImageGenButton" class="model-button">Curo Image*</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="toggle-label">Dark Mode</span>
+                    <label class="toggle-switch" for="darkModeToggle">
+                        <input type="checkbox" id="darkModeToggle" checked>
+                        <span class="slider">
+                            <span class="slider-icon sun">🌙</span>
+                            <span class="slider-icon moon">☀️</span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <span class="toggle-label">Auto-Save</span>
+                    <label class="toggle-switch" for="autoSaveToggle">
+                        <input type="checkbox" id="autoSaveToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <span class="toggle-label">Disable Memory</span>
+                    <label class="toggle-switch" for="disableMemoryToggle">
+                        <input type="checkbox" id="disableMemoryToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div id="switch-to-pro-popup" class="switch-to-pro-popup">
+                    <p>This question might be better handled by Curo Pro. <span id="info-icon-popup" class="info-icon-popup flashing">â“˜</span></p>
+                </div>
+                 <div class="setting-item">
+                    <button id="faqsButton" class="popup-button">FAQs</button> <button id="aboutButton" class="popup-button">About</button>
+                </div>
+
+            </div>
+        </div>
+      
+        <div class="chat-container" id="chatContainer">
+            <!-- SETTINGS POPUP IS NO LONGER HERE -->
+            
+            <div class="chat-header">
+                <button id="saveChatButton" class="save-chat-button" title="Save Chat">
+                    <i class="fas fa-save"></i>
+                </button>
+                <h2 id="chatTitle">New Chat</h2>
+                <button id="newChatButton" class="new-chat-button" title="New Chat">
+                    <span class="material-symbols-outlined">add_comment</span>
+                </button>
+
+                <button id="expandCustomInstructionButton" class="expand-button" title="Expand Custom Instruction" style="display: none;">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="custom-instruction-container" style="display: none;">
+                <div class="custom-instruction-wrapper">
+                    <textarea id="customInstructionInput" placeholder="Enter your custom instruction here! (For a better roleplaying experience, use the !roleplay command.)"></textarea>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+
+
+            </div>
+
+
+            <div class="input-area" id="inputArea">
+
+                <div id="image-attachment-area" style="display: none;">
+                    <img id="attached-image" src="" alt="Attached Image" style="max-height: 100px; max-width: 100%; border-radius: 5px;">
+                </div>
+                <div id="file-attachment-box" style="display: none; position: absolute; top: -110px; left: 15px; z-index: 21; pointer-events: none; align-items: center; justify-content: center; width: 95px; height: 95px; border: 2px dashed #777; border-radius: 5px; color: #777; font-size: 1em; flex-direction: column;">
+                    <i class="fas fa-file" style="font-size: 3em; margin-bottom: 5px;"></i>
+                    <span id="file-type-text">FILE</span>
+                    <span id="file-name-text"></span>  
+                </div>
+                <div id="camera-preview-area" style="display: none; position: absolute; top: -110px; left: 15px; z-index: 21; pointer-events: none; align-items: center; justify-content: center; flex-direction: column;">
+                    <video id="camera-preview" style="display: none;"></video>
+                    <canvas id="camera-canvas" style="display: none;"></canvas>
+                    <div id="camera-buttons" style="display: flex; margin-top: 5px;">
+                        <button id="cancel-camera-button">Cancel</button>
+                    </div>
+                </div>
+
+
+                <button id="remove-attachment-button-new" class="remove-attachment-button-new" style="display: none;" title="Remove Attachment" aria-label="Remove Attachment">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div id="name-loader">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <div id="memoryPanel">
+                    <div class="panel-header draggable">
+                        <h2>Manage Memory</h2>
+                    </div>
+                     <button id="closeMemoryPanelButton" class="close-panel-button" title="Close Memory Panel">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    <div class="panel-content">
+                        <table id="memoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Index</th>
+                                    <th>Content</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody id="memoryTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <button id="scroll-down-button" class="scroll-down-button" style="display: none;">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+
+
+                <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                <input type="file" id="file-upload" style="display: none;" accept="application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, .docx, .doc, .txt, .csv, .rtf, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation, .pptx, .ppt, .mp3 , .mp4 , .webm , .webp">
+
+
+                <button type="button" id="attach-image-button" >
+                    <i class="fas fa-paperclip"></i>
+                </button>
+
+
+                <label for="user-input">
+                    <textarea id="user-input" placeholder="Type your message..."></textarea>
+                </label>
+                <button id="send-button" class="input-action-button">
+                    <span id="send-button-icon">➤</span>
+                </button>
+                
+                <button id="mic-button-container" class="input-action-button">
+                    <i id="mic-button" class="fas fa-microphone"></i>
+                </button>
+               
+
+                <div class="recording-indicator" id="recording-indicator" style="display: none;">
+                    <span class="pulsating-dot"></span>
+                    <button id="stop-recording-button">‎ ‎ ‎ Stop</button>
+                </div>
+
+                <div class="typing-indicator" id="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="idebar" id="historySidebar">
+            <div class="history-header">
+                <h3>⠀Chat History</h3>
+                 <button id="importChatButton" class="import-chat-button" title="Import Chat">
+                    <i class="fas fa-file-import"></i> Import
+                </button>
+            </div>
+            <ul class="history-list" id="historyList">
+
+            </ul>
+
+           
+            <button id="manageMemoryButton" title="Manage Memory">
+                <i class="fas fa-brain"></i> Manage Memory
+            </button>
+
+
+            <div id="aboutPopup" class="popup">
+                <div class="popup-content">
+                    <button id="closeAboutPopup" class="close-popup-button">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div id="aboutContent"></div>
+                </div>
+            </div>
+            <div id="faqsPopup" class="popup">
+                <div class="popup-content">
+                    <button id="closeFAQsPopup" class="-popup-button">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <h2>FAQs</h2>
+                    <div id="faqsContent"></div>
+                </div>
+            </div>
+            <div id="memoryPopup" class="popup"> 
+                <div class="popup-content">
+                    <button id="closeMemoryPopup" class="close-popup-button">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <h2>Memory Points</h2>
+                    <ul id="memoryListForSettings" class="memory-list-settings">
+                        
+                    </ul>
+                </div>
+            </div>
+            <button id="closeHistoryButton" class="close-history-button" title="Close History">
+                <i class=" "></i>
+            </button>
+             <input type="file" id="chatFileInput" style="display: none;" accept=".txt">
+        </div>
+
+
+
+        <script>
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker
+                        .register("/service-worker.js")
+                        .then((registration) => {
+                            
+                        })
+                        .catch((error) => {
+                            console.error("Service Worker registration failed:", error);
+                        });
+                });
+            }
+        </script>
+     <noscript>you need to enable JavaScript to run this app.</noscript>
+        <script src="script.js"></script>
+      
+    </body>
+</html>
