@@ -1,4 +1,5 @@
-# Curo AI 🤖
+# [Curo AI 🤖](https://curoai.netlify.app/)
+
 
 A private, uncensored, and highly customizable PWA frontend for Google's Gemini AI. All your data, including your API key and chats, is stored locally in your browser.
 
@@ -39,3 +40,4 @@ Commercial rights are exclusively reserved for the project owner. See the [LICEN
 ### ⚠️ Disclaimer
 
 This is an experimental tool. The AI's responses are uncensored and may be inaccurate or offensive. Use at your own risk and discretion.
+
