@@ -7,10 +7,10 @@ A private, uncensored, and highly customizable PWA frontend for Google's Gemini 
 
 ### Core Features
 
-*   ** 100% Private:** Your API key and chat history are stored locally. Nothing is sent to any server except the official Google AI API.
-*   ** Full Control:** Switch between different Gemini models, fine-tune AI parameters (`temperature` & `topP`), and provide custom system instructions.
-*   ** Advanced Chat:** Features persistent memory, file uploads (PDF, images, audio, video), and built-in image generation.
-*   ** PWA Ready:** Install it on your desktop or mobile home screen for a native app experience.
+*   **100% Private:** Your API key and chat history are stored locally. Nothing is sent to any server except the official Google AI API.
+*   **Full Control:** Switch between different Gemini models, fine-tune AI parameters (`temperature` & `topP`), and provide custom system instructions.
+*   **Advanced Chat:** Features persistent memory, file uploads (PDF, images, audio, video), and built-in image generation.
+*   **PWA Ready:** Install it on your desktop or mobile home screen for a native app experience.
 
 ---
 
@@ -40,6 +40,7 @@ Commercial rights are exclusively reserved for the project owner. See the [LICEN
 ###  Disclaimer
 
 This is an experimental tool. The AI's responses are uncensored and may be inaccurate or offensive. Use at your own risk and discretion.
+
 
 
 
